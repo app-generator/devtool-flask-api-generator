@@ -2,6 +2,8 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+import json
+from datetime import datetime
 
 from flask import render_template, redirect, request, url_for
 from flask_login import (
@@ -10,16 +12,22 @@ from flask_login import (
     logout_user
 )
 
+from flask_restx import Resource, Api
+
 from apps import db, login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
 from apps.authentication.models import Users
 
-from apps.authentication.util import verify_pass
+from apps.authentication.util import verify_pass, generate_token
+
+api = Api(blueprint)
+
 
 @blueprint.route('/')
 def route_default():
     return redirect(url_for('authentication_blueprint.login'))
+
 
 # Login & Registration
 
@@ -37,7 +45,6 @@ def login():
 
         # Check the password
         if user and verify_pass(password, user.password):
-
             login_user(user)
             return redirect(url_for('authentication_blueprint.route_default'))
 
@@ -96,7 +103,8 @@ def register():
 @blueprint.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('authentication_blueprint.login')) 
+    return redirect(url_for('authentication_blueprint.login'))
+
 
 # Errors
 
@@ -118,3 +126,53 @@ def not_found_error(error):
 @blueprint.errorhandler(500)
 def internal_error(error):
     return render_template('home/page-500.html'), 500
+
+
+@api.route('/login/jwt/', methods=['POST'])
+class JWTLogin(Resource):
+    def post(self):
+        try:
+            data = request.form
+
+            if not data:
+                data = request.json
+
+            if not data:
+                return {
+                           'message': 'username or password is missing',
+                           "data": None,
+                           'success': False
+                       }, 400
+            # validate input
+            user = Users.query.filter_by(username=data.get('username')).first()
+            if user and verify_pass(data.get('password'), user.password):
+                try:
+
+                    # Empty or null Token
+                    if not user.api_token or user.api_token == '':
+                        user.api_token = generate_token(user.id)
+                        user.api_token_ts = int(datetime.utcnow().timestamp())
+                        db.session.commit()
+
+                    # token should expire after 24 hrs
+                    return {
+                        "message": "Successfully fetched auth token",
+                        "success": True,
+                        "data": user.api_token
+                    }
+                except Exception as e:
+                    return {
+                               "error": "Something went wrong",
+                               "success": False,
+                               "message": str(e)
+                           }, 500
+            return {
+                       'message': 'username or password is wrong',
+                       'success': False
+                   }, 403
+        except Exception as e:
+            return {
+                       "error": "Something went wrong",
+                       "success": False,
+                       "message": str(e)
+                   }, 500
