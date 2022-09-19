@@ -8,6 +8,7 @@ from   flask_migrate import Migrate
 from   flask_minify  import Minify
 from   sys import exit
 
+from api_generator.commands import gen_api
 from apps.config import config_dict
 from apps import create_app, db
 
@@ -38,6 +39,9 @@ if DEBUG:
     app.logger.info('Page Compression = ' + 'FALSE' if DEBUG else 'TRUE' )
     app.logger.info('DBMS             = ' + app_config.SQLALCHEMY_DATABASE_URI)
     app.logger.info('ASSETS_ROOT      = ' + app_config.ASSETS_ROOT )
+
+for command in [gen_api, ]:
+    app.cli.add_command(command)
 
 if __name__ == "__main__":
     app.run()
