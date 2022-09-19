@@ -51,4 +51,5 @@ config_dict = {
 API_GENERATOR = {
     "books": "Book",
     "cities": "City",
+    # "laptops": "Laptop", # not exist
 }
