@@ -44,7 +44,7 @@
               <div class="col-lg-4 ms-auto text-center mt-5 mt-lg-0">
                 <div class="bg-gradient-primary border-radius-lg h-100">
                   <div class="position-relative d-flex align-items-center justify-content-center h-100">
-                    <img class="w-100 position-relative z-index-2 pt-4" src="{{ ASSETS_ROOT }}/img/illustrations/rocket-white.png" alt="rocket">
+                    <img class="w-100 position-relative z-index-2 pt-4" src="{{ config.ASSETS_ROOT }}/img/illustrations/rocket-white.png" alt="rocket">
                   </div>
                 </div>
               </div>
@@ -64,16 +64,13 @@
                 <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;" data-bs-toggle="modal" data-bs-target="#createModal">
                     <i class="fas fa-plus text-success me-2" aria-hidden="true"></i>Add Item
                 </a>
-                <a class="btn btn-link text-dark px-3 mb-0" href="javascript:;" data-bs-toggle="modal" data-bs-target="#editModal">
-                    <i class="fas fa-plus text-success me-2" aria-hidden="true"></i>Edit Item
-                </a>
             </h6>
           </div>
           <div class="card-body pt-4 p-3">
             <ul class="list-group">
               <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
                 <div class="d-flex flex-column">
-                  <span id="book-container" >Empty</span>
+                  <span class="text-xs">Empty</span>
                 </div>
               </li>
             </ul>
@@ -87,55 +84,56 @@
 
   </div>
 
-    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <form id="create-form">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Add</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                    <label for="name">Title</label>
-                    <input id="title" class="form-control" name="title">
-                </div>
-                  <p id="create-error" class=" text-danger fw-bold"></p>
-              </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary" value="Save changes">
-          </div>
-        </form>
+  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="create-form">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                  <label for="name">Title</label>
+                  <input id="title" class="form-control" name="title">
+              </div>
+                <p id="create-error" class=" text-danger fw-bold"></p>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" value="Save changes">
+        </div>
+      </form>
       </div>
     </div>
+  </div>
 
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <form id="edit-form">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                    <label for="name">Id</label>
-                    <input id="id" class="form-control" name="id">
-                    <label for="name">Title</label>
-                    <input id="title" class="form-control" name="title">
-                </div>
-                  <p id="edit-error" class=" text-danger fw-bold"></p>
-              </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary" value="Save changes">
-          </div>
-        </form>
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="edit-form">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                  <label for="name">Id</label>
+                  <input readonly id="edit_id" class="form-control" name="id">
+                  <label for="name">Title</label>
+                  <input id="edit_title" class="form-control" name="title">
+              </div>
+                <p id="edit-error" class=" text-danger fw-bold"></p>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="submit" class="btn btn-primary" value="Save changes">
+        </div>
+      </form>
       </div>
     </div>
+  </div>
+
 {% endblock content %}
 
 <!-- Specific JS goes HERE --> 
@@ -143,29 +141,9 @@
 
   <script>
 
-    let token = ''
-    const formData = new FormData()
-    formData.append('username','apiadmin')
-    formData.append('password','apiadmin')
-
-    // login
-    fetch('/login/jwt/',{
-        method: 'POST',
-        body: formData
-    })
-        .then((response) => {
-            if(!response.ok)
-                return response.text().then(text => { throw new Error(text) })
-            else
-                return response.json()
-        })
-        .then((res) => {
-            token = res.data
-            console.log(res)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+    const token       = localStorage.getItem('token') || ''
+    let data          = []
+    let requestAction = 'post' // for update/add record
 
     // fetch data
     fetch('/api/books/',{
@@ -178,14 +156,53 @@
                 return response.json()
         })
         .then((res) => {
-            const dataContainer = document.getElementById('book-container')
-            dataContainer.textContent = ''
-            console.log(res)
+            const itemContainer = document.querySelector('.list-group');
+            itemContainer.innerHTML = '';
+            console.log(res);
+            data = res.data
 
             res.data.map((d) => {
-                Object.keys(d).map((key) => {
-                    dataContainer.textContent += key + ": " + d[key] + ", "
-                })
+                
+                //itemContainer.innerHTML += d.id + " -> " + d.title + "<br />";
+
+                const item = `<li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+                      <div class="d-flex flex-column">
+                        <span class="text-xs">id: <span class="text-dark ms-sm-2 font-weight-bold" id="model-id">${d.id}</span></span>
+                        <span class="text-xs">name: <span class="text-dark ms-sm-2 font-weight-bold" id="model-name">${d.title}</span></span>
+                      </div>
+                      <div class="ms-auto text-end">
+                        <a class="btn btn-link text-danger text-gradient px-3 mb-0 delete" href="javascript:;" id="${d.id}"><i class="far fa-trash-alt me-2"></i>Delete</a>
+                        <a class="btn btn-link text-dark px-3 mb-0 edit" href="javascript:;" id="${d.id}"
+                              data-bs-toggle="modal" data-bs-target="#editModal"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
+                      </div>
+                    </li>`
+
+                  itemContainer.innerHTML += item;   
+
+                //Object.keys(d).map((key) => {
+
+                  //let ID   = key   ;
+                  //let NAME = d[key];
+
+                  //itemContainer.innerHTML += ID + " -> " + NAME + "<br />";
+
+                  /*
+                  const item = `<li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+                      <div class="d-flex flex-column">
+                        <span class="text-xs">id: <span class="text-dark ms-sm-2 font-weight-bold" id="model-id">${ID}</span></span>
+                        <span class="text-xs">name: <span class="text-dark ms-sm-2 font-weight-bold" id="model-name">${NAME}</span></span>
+                      </div>
+                      <div class="ms-auto text-end">
+                        <a class="btn btn-link text-danger text-gradient px-3 mb-0 delete" href="javascript:;" id="${ID}"><i class="far fa-trash-alt me-2"></i>Delete</a>
+                        <a class="btn btn-link text-dark px-3 mb-0 edit" href="javascript:;" id="${NAME}"
+                              data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit</a>
+                      </div>
+                    </li>`
+
+                  itemContainer.innerHTML += item;   
+                  */   
+                    
+                //})
             })
         })
         .catch((err) => {
@@ -216,28 +233,68 @@
     }
 
     document.getElementById('edit-form').onsubmit = (e) => {
-            e.preventDefault()
-            const formData = new FormData(e.target)
+          e.preventDefault()
+          const formData = new FormData(e.target)
 
-            fetch(`/api/books/${formData.get('id')}/`,{
-                method: 'PUT',
-                body: formData,
-                headers: {"Authorization": `${token}`}
-            })
-                .then((response) => {
-                    if(!response.ok)
-                        return response.text().then(text => { throw new Error(text) })
-                    else
-                        return response.json()
-                })
-                .then((res) => {
-                    console.log(res)
-                    location.reload()
-                })
-                .catch((err) => {
-                    document.getElementById('edit-error').textContent = err
-                })
+          fetch(`/api/books/${formData.get('id')}/`,{
+              method: 'PUT',
+              body: formData,
+              headers: {"Authorization": `${token}`}
+          })
+              .then((response) => {
+                  if(!response.ok)
+                      return response.text().then(text => { throw new Error(text) })
+                  else
+                      return response.json()
+              })
+              .then((res) => {
+                  console.log(res)
+                  location.reload()
+              })
+              .catch((err) => {
+                  document.getElementById('edit-error').textContent = err
+              })
+      }
+
+      document.querySelector('.list-group').addEventListener('click' , (e) => {
+
+        if (e.target.nodeName === 'A') {
+            if (e.target.className.includes('edit')) {
+                editAction(e.target.id)
+                requestAction = 'put'
+            } else if (e.target.className.includes('delete'))
+                deleteAction(e.target.id)
+
         }
+      })
+
+      const deleteAction = (id) => {
+
+          const modelName = 'books'
+          fetch(`/api/${modelName}/${id}/`,{
+              method: 'DELETE',
+              headers: {"Authorization": `${token}`}
+          })
+              .then(response => response.json())
+              .then(res => {
+                  location.reload()
+                  console.log(res)
+              })
+              .catch(err => {console.log(err)})
+      }
+
+      const editAction =  (id) => {
+
+          console.log( ' EDIT id -> ' + id )
+
+          // get data from template
+          const item = data.filter(d => d.id.toString() === id)[0]
+          console.log(' EDIT -> ' + item.id + ' / ' + item.title )
+          
+          document.getElementById('edit_title').value = item.title
+          document.getElementById('edit_id').value = item.id
+      }
+
   </script>
 
 {% endblock javascripts %}

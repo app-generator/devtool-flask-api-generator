@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 import json
 from datetime import datetime
 
+import flask
 from flask import render_template, redirect, request, url_for
 from flask_login import (
     current_user,
@@ -34,11 +35,14 @@ def route_default():
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm(request.form)
-    if 'login' in request.form:
+
+    if flask.request.method == 'POST':
 
         # read form data
         username = request.form['username']
         password = request.form['password']
+
+        #return 'Login: ' + username + ' / ' + password
 
         # Locate user
         user = Users.query.filter_by(username=username).first()
@@ -53,11 +57,11 @@ def login():
                                msg='Wrong user or password',
                                form=login_form)
 
-    if not current_user.is_authenticated:
+    if current_user.is_authenticated:
+        return redirect(url_for('home_blueprint.index'))
+    else:
         return render_template('accounts/login.html',
                                form=login_form)
-    return redirect(url_for('home_blueprint.index'))
-
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
